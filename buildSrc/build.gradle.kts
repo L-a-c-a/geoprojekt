@@ -15,3 +15,6 @@ repositories {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin")
 }
+
+//compileKotlin.kotlinOptions.jvmTarget = $java_version  //nem érti
+//compileKotlin.kotlinOptions.jvmTarget = "11"

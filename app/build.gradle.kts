@@ -9,9 +9,14 @@ plugins {
 dependencies {
     implementation("org.apache.commons:commons-text")
     implementation(project(":utilities"))
+    implementation("io.ktor:ktor-server-core:1.5.0")
+    implementation("io.ktor:ktor-server-netty:1.5.0")
+    implementation("io.ktor:ktor-gson:1.5.0")
 }
 
 application {
     // Define the main class for the application.
     mainClass.set("geoprojekt.app.AppKt")
 }
+
+//compileKotlin.kotlinOptions.jvmTarget = $java_version

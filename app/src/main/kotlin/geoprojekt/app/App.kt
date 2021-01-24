@@ -7,8 +7,43 @@ import geoprojekt.utilities.StringUtils
 
 import org.apache.commons.text.WordUtils
 
+import io.ktor.server.netty.*
+import io.ktor.routing.*
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.server.engine.*
+import io.ktor.features.*
+import io.ktor.gson.*
+/*
 fun main() {
-    val tokens = StringUtils.split(MessageUtils.getMessage())
+    val tokens = StringUtils.split(MessageUtils.getMessage("Laca"))
     val result = StringUtils.join(tokens)
     println(WordUtils.capitalize(result))
 }
+ */
+
+fun main() {
+	embeddedServer(Netty, port = 8000) {
+    install(ContentNegotiation) { gson {} }
+		routing {
+			get ("/") {
+				call.respondText("Hello, world!")
+			}
+      get("/nev/{nev}")
+      {
+        val nev = call.parameters["nev"] ?: "te nemtudomki"
+				//call.respond("""{ "Helló": "${nev}"! }""")
+        call.respond(Hello(nev))
+      }
+      post("/nev")
+      {
+        val hell = call.receive<Hello>()
+        call.respond(hell)
+      }
+		}
+	}.start(wait = true)
+}
+
+data class Hello(val hello:String)

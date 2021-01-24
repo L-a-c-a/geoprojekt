@@ -5,6 +5,7 @@ package geoprojekt.app
 
 class MessageUtils {
     companion object {
-        fun getMessage(): String = "Hello      World!"
+      fun getMessage(): String = "Hello      World!"
+      fun getMessage(nev:String): String = "Hello      $nev!"
     }
 }
