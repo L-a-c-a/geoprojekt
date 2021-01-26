@@ -8,4 +8,4 @@
  */
 
 rootProject.name = "geoprojekt"
-include("app", "list", "utilities")
+include("app", "db", "utilities")

@@ -7,5 +7,6 @@ plugins {
 }
 
 dependencies {
-    api(project(":list"))
+  //api(project(":db"))
+  implementation("com.google.code.gson:gson:2.8.6")
 }

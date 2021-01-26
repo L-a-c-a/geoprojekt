@@ -3,9 +3,8 @@
  */
 package geoprojekt.app
 
-import geoprojekt.utilities.StringUtils
-
-import org.apache.commons.text.WordUtils
+import geoprojekt.utilities.*
+import geoprojekt.db.*
 
 import io.ktor.server.netty.*
 import io.ktor.routing.*
@@ -16,13 +15,6 @@ import io.ktor.response.*
 import io.ktor.server.engine.*
 import io.ktor.features.*
 import io.ktor.gson.*
-/*
-fun main() {
-    val tokens = StringUtils.split(MessageUtils.getMessage("Laca"))
-    val result = StringUtils.join(tokens)
-    println(WordUtils.capitalize(result))
-}
- */
 
 fun main() {
 	embeddedServer(Netty, port = 8000) {
@@ -41,6 +33,15 @@ fun main() {
       {
         val hell = call.receive<Hello>()
         call.respond(hell)
+      }
+      get("konf") { call.respond(KONFIG.konf!!)}  //vigyázz, kiírja a jelszót!
+
+      /* */ get("/ize") { call.respond(Hello(CRUD().q0())) }
+
+      get("/point/{id}")
+      {
+        val id = call.parameters["id"]?.toIntOrNull()?:0
+        call.respond(CRUD().getPgPoint(id))
       }
 		}
 	}.start(wait = true)
