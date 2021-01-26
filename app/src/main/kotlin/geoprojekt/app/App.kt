@@ -20,28 +20,19 @@ fun main() {
 	embeddedServer(Netty, port = 8000) {
     install(ContentNegotiation) { gson {} }
 		routing {
-			get ("/") {
-				call.respondText("Hello, world!")
-			}
-      get("/nev/{nev}")
-      {
-        val nev = call.parameters["nev"] ?: "te nemtudomki"
-				//call.respond("""{ "Helló": "${nev}"! }""")
-        call.respond(Hello(nev))
-      }
-      post("/nev")
-      {
-        val hell = call.receive<Hello>()
-        call.respond(hell)
-      }
       get("konf") { call.respond(KONFIG.konf!!)}  //vigyázz, kiírja a jelszót!
-
-      /* */ get("/ize") { call.respond(Hello(CRUD().q0())) }
 
       get("/point/{id}")
       {
         val id = call.parameters["id"]?.toIntOrNull()?:0
-        call.respond(CRUD().getPgPoint(id))
+        call.respond(CRUD().getPGpoint(id))
+      }
+
+      get("/read")
+      {
+        val id = call.request.queryParameters["id"]
+        val typ = call.request.queryParameters["type"]
+        call.respond(CRUD().read(id, typ))
       }
 		}
 	}.start(wait = true)

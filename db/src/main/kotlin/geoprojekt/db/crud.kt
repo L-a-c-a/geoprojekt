@@ -9,21 +9,7 @@ import org.postgresql.geometric.*
 
 class CRUD
 {
-  /* */ fun q0() = { "izé "}()
-
-  fun getPgPointXXX(id:Int):GeoJsonPoint =
-  {
-    val qry:ResultQuery<Record>? =
-    try
-    {
-      DB.kontxt.resultQuery("""select 'point' "type", geom::point coordinates from  stations s where gid=? """, id)
-      /* */ .also{println(it.getSQL()); println(it.getBindValues())}
-    }catch(e:Throwable)  { e.printStackTrace(); null }
-    //* */GeoJsonPoint("point", doubleArrayOf(2.0, 3.14))
-    try { qry?.fetchAnyInto(GeoJsonPoint::class.java) }catch(e:Throwable) { e.printStackTrace(); null } ?: GeoJsonPoint("error", PGpoint(0.0, 0.0))
-  }()
-
-  fun getPgPoint(id:Int):GeoJsonPoint =
+  fun getPGpoint(id:Int):GeoJsonPoint =
   {
     var pont:PGpoint?
     val qry:ResultQuery<Record>? =
@@ -34,13 +20,20 @@ class CRUD
       }catch(e:Throwable)  { e.printStackTrace(); null }
     try { pont = qry?.fetchAnyInto(PGpoint::class.java) }catch(e:Throwable) { e.printStackTrace(); pont = PGpoint(0.0, 0.0) }
 
-    GeoJsonPoint(pont?.type, pont)
+    GeoJsonPoint(pont?.type, arrayOf(pont?.x, pont?.y))
 
   }()
 
+  fun read(id:String?, typ:String?):GeoJsonPoint =
+  {
+    when (typ)
+    {
+      else -> getPGpoint(id?.toIntOrNull()?:0)
+    }
+  }()
 
 
 }
 
 
-data class GeoJsonPoint (val type:String?, val coordinates:PGpoint?)
+data class GeoJsonPoint (val type:String?, val coordinates:Array<Double?>?)
