@@ -30,9 +30,15 @@ fun main() {
 
       get("/read")
       {
-        val id = call.request.queryParameters["id"]
+        val id = call.request.queryParameters["id"]?.toIntOrNull()?:0
         val typ = call.request.queryParameters["type"]
-        call.respond(CRUD().read(id, typ))
+        //val geojsonSomeType = CRUD().read(id, typ)
+        //call.respond(geojsonSomeType)
+        when (typ)
+        {
+          "polygon" -> call.respond(CRUD().getPGpolygon(id))
+          else -> call.respond(CRUD().getPGpoint(id))
+        }
       }
 		}
 	}.start(wait = true)
