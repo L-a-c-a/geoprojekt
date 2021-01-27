@@ -19,6 +19,7 @@ import io.ktor.gson.*
 fun main() {
 	embeddedServer(Netty, port = 8000) {
     install(ContentNegotiation) { gson {} }
+    install(DoubleReceive) { receiveEntireContent=true }
 		routing {
       get("konf") { call.respond(KONFIG.konf!!)}  //vigyázz, kiírja a jelszót!
 
@@ -32,16 +33,42 @@ fun main() {
       {
         val id = call.request.queryParameters["id"]?.toIntOrNull()?:0
         val typ = call.request.queryParameters["type"]
-        //val geojsonSomeType = CRUD().read(id, typ)
-        //call.respond(geojsonSomeType)
-        when (typ)
-        {
-          "polygon" -> call.respond(CRUD().getPGpolygon(id))
-          else -> call.respond(CRUD().getPGpoint(id))
-        }
+        if (id<1) call.respond("Invalid id, may be only positive integer")
+        else
+          when (typ)
+          {
+            "polygon" -> call.respond(CRUD().getPGpolygon(id))
+            "point" -> call.respond(CRUD().getPGpoint(id))
+            else -> call.respond("Invalid type: $typ")
+          }
       }
-		}
+
+      put("/create")
+      {
+        val objstr = call.receiveText()
+        val obj = call.receive<GeoJsonAny>()
+        //val pointObj = call.receive<GeoJsonAny>()
+            /* */ println(obj)
+            /* */ println(objstr)
+        /*
+        when (obj.type)
+        { "point" -> 
+          {
+            val pointObj = call.receive<GeoJsonPoint>()
+            val answ =   arrayOf(2,3) //CRUD().putPGpoint(pointObj)
+            call.respond("${answ[0]} object(s) saved, new id = ${answ[1]}")
+          }
+          "polygon" -> 
+          {
+            val polygonObj = call.receive<GeoJsonPolygon>()
+            val answ = CRUD().putPGpolygon(polygonObj)
+            call.respond("${answ[0]} object(s) saved, new id = ${answ[1]}")
+          }
+          else -> call.respond("Invalid input")
+        } */
+        call.respond("jfmvnfvjf")
+      }
+
+    }
 	}.start(wait = true)
 }
-
-data class Hello(val hello:String)
