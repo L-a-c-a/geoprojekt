@@ -49,18 +49,17 @@ fun main() {
         { "point" -> 
           {
             val pointObj = call.receive<GeoJsonPoint>()
-            val answ = CRUD().putPGpoint(pointObj)
-            call.respond(answ ?. let{"${it[0]} object(s) saved, new id = ${it[1]}"} ?: "Invalid input")
+            call.respond(CRUD().putPGpoint(pointObj) ?. let{"${it[0]} object(s) saved, new id = ${it[1]}"} ?: "Invalid input or internal error")
           }
           "polygon" -> 
           {
             val polygonObj = call.receive<GeoJsonPolygon>()
-            val answ = CRUD().putPGpolygon(polygonObj)
-            call.respond("${answ[0]} object(s) saved, new id = ${answ[1]}")
+            call.respond(CRUD().putPGpolygon(polygonObj) ?. let{"${it[0]} object(s) saved, new id = ${it[1]}"} ?: "Invalid input or internal error")
           }
           else -> call.respond("Invalid input")
         }
       }
+      // TODO: pass data to CRUD in text format (with receiveText()) and CRUD will deserialize it as needed, so the "type" parameter is not needed
 
     }
 	}.start(wait = true)

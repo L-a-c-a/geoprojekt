@@ -42,28 +42,12 @@ class CRUD
     GeoJsonPolygon("polygon", poly?.points?.map{arrayOf(it.x, it.y)}?.toTypedArray(), errorMessages.takeUnless{it.isEmpty()}?.let{it.toTypedArray()})  // to conform GeoJSON
   }()
 
-  /*
-  fun putPG(obj:GeoJsonAny):Array<Int> =
-  {
-    when (obj)
-    {
-      is GeoJsonPoint -> arrayOf(1, 2)
-      is GeoJsonPolygon -> arrayOf(1, 3)  //nem műx, Incompatible types:
-      else -> arrayOf(0, 0)
-    }
-    
-  }()
-  */
-
   fun putPGpoint(obj:GeoJsonPoint):Array<Int>?
   {
     if (obj.coordinates==null) return null
 
     val qryStr = "insert into geo_points (coord) values(point(${obj.coordinates!![0]}, ${obj.coordinates!![1]}))"
-    /* */ println(qryStr)
     val qry:Query = DB.kontxt.query(qryStr)
-      //try { DSL.query("insert into geo_points (coord) values (?) returning ?", obj, ret) }catch(e:Throwable)  { e.printStackTrace(); null }
-      //DB.kontxt.insertInto(table("geo_points", field("coord"))).values(obj).returning(field("id"))
     val cnt = try { qry.execute() }catch(e:Throwable)  { e.printStackTrace(); return null }
 
     val idQry:ResultQuery<Record>? = try { DB.kontxt.resultQuery("select currval('geo_points_id_seq')") }catch(e:Throwable) { e.printStackTrace(); return null }
@@ -71,10 +55,21 @@ class CRUD
     return arrayOf(cnt, newID?:-1)
   }
 
-  fun putPGpolygon(obj:GeoJsonPolygon):Array<Int> =
+  fun putPGpolygon(obj:GeoJsonPolygon):Array<Int>?
   {
-    arrayOf(1, 3)
-  }()
+    if (obj.coordinates==null) return null
+
+    val coordPGInputFormat:String = obj.coordinates!!.flatten().joinToString(prefix="'", postfix="'")
+
+    val qryStr = "insert into geo_polygons (coord) values(polygon($coordPGInputFormat))"
+    /* */ println(qryStr)
+    val qry:Query = DB.kontxt.query(qryStr)
+    val cnt = try { qry.execute() }catch(e:Throwable)  { e.printStackTrace(); return null }
+
+    val idQry:ResultQuery<Record>? = try { DB.kontxt.resultQuery("select currval('geo_polygons_id_seq')") }catch(e:Throwable) { e.printStackTrace(); return null }
+    val newID = try { idQry?.fetchAnyInto(Int::class.java) }catch(e:Throwable) { e.printStackTrace(); return null }
+    return arrayOf(cnt, newID?:-1)
+  }
 
 }
 
