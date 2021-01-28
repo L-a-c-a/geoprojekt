@@ -19,7 +19,6 @@ import io.ktor.gson.*
 fun main() {
 	embeddedServer(Netty, port = 8000) {
     install(ContentNegotiation) { gson {} }
-    install(DoubleReceive) { receiveEntireContent=true }
 		routing {
       get("konf") { call.respond(KONFIG.konf!!)}  //vigyázz, kiírja a jelszót!
 
@@ -45,18 +44,13 @@ fun main() {
 
       put("/create")
       {
-        val objstr = call.receiveText()
-        val obj = call.receive<GeoJsonAny>()
-        //val pointObj = call.receive<GeoJsonAny>()
-            /* */ println(obj)
-            /* */ println(objstr)
-        /*
-        when (obj.type)
+        val typ = call.request.queryParameters["type"]
+        when (typ)
         { "point" -> 
           {
             val pointObj = call.receive<GeoJsonPoint>()
-            val answ =   arrayOf(2,3) //CRUD().putPGpoint(pointObj)
-            call.respond("${answ[0]} object(s) saved, new id = ${answ[1]}")
+            val answ = CRUD().putPGpoint(pointObj)
+            call.respond(answ ?. let{"${it[0]} object(s) saved, new id = ${it[1]}"} ?: "Invalid input")
           }
           "polygon" -> 
           {
@@ -65,8 +59,7 @@ fun main() {
             call.respond("${answ[0]} object(s) saved, new id = ${answ[1]}")
           }
           else -> call.respond("Invalid input")
-        } */
-        call.respond("jfmvnfvjf")
+        }
       }
 
     }

@@ -55,11 +55,21 @@ class CRUD
   }()
   */
 
-  fun putPGpoint(obj:GeoJsonPoint):Array<Int> =
+  fun putPGpoint(obj:GeoJsonPoint):Array<Int>?
   {
-    println(obj)
-    arrayOf(1, 2)
-  }()
+    if (obj.coordinates==null) return null
+
+    val qryStr = "insert into geo_points (coord) values(point(${obj.coordinates!![0]}, ${obj.coordinates!![1]}))"
+    /* */ println(qryStr)
+    val qry:Query = DB.kontxt.query(qryStr)
+      //try { DSL.query("insert into geo_points (coord) values (?) returning ?", obj, ret) }catch(e:Throwable)  { e.printStackTrace(); null }
+      //DB.kontxt.insertInto(table("geo_points", field("coord"))).values(obj).returning(field("id"))
+    val cnt = try { qry.execute() }catch(e:Throwable)  { e.printStackTrace(); return null }
+
+    val idQry:ResultQuery<Record>? = try { DB.kontxt.resultQuery("select currval('geo_points_id_seq')") }catch(e:Throwable) { e.printStackTrace(); return null }
+    val newID = try { idQry?.fetchAnyInto(Int::class.java) }catch(e:Throwable) { e.printStackTrace(); return null }
+    return arrayOf(cnt, newID?:-1)
+  }
 
   fun putPGpolygon(obj:GeoJsonPolygon):Array<Int> =
   {
