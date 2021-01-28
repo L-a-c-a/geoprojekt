@@ -61,6 +61,55 @@ fun main() {
       }
       // TODO: pass data to CRUD in text format (with receiveText()) and CRUD will deserialize it as needed, so the "type" parameter is not needed
 
+      post("/update")
+      {
+        val typ = call.request.queryParameters["type"]
+        val id = call.request.queryParameters["id"]?.toIntOrNull()?:0
+        if (id<1) call.respond("Invalid id, may be only positive integer")
+        else
+          when (typ)
+          { "point" -> 
+            {
+              val pointObj = call.receive<GeoJsonPoint>()
+              call.respond(CRUD().updPGpoint(id, pointObj) ?. let{"${it[0]} object(s) updated, id = ${it[1]}"} ?: "Invalid input or internal error")
+            }
+            "polygon" -> 
+            {
+              val polygonObj = call.receive<GeoJsonPolygon>()
+              call.respond(CRUD().updPGpolygon(id, polygonObj) ?. let{"${it[0]} object(s) updated, id = ${it[1]}"} ?: "Invalid input or internal error")
+            }
+            else -> call.respond("Invalid input")
+          }
+      }
+
+      delete("/delete")
+      {
+        val typ = call.request.queryParameters["type"]
+        val id = call.request.queryParameters["id"]?.toIntOrNull()?:0
+        if (id<1) call.respond("Invalid id, may be only positive integer")
+        else
+          when (typ)
+          {
+            "polygon" -> call.respond(CRUD().delPGpolygon(id) ?. let{"${it[0]} object(s) deleted, id = ${it[1]}"} ?: "Invalid input or internal error")
+            "point" -> call.respond(CRUD().delPGpoint(id) ?. let{"${it[0]} object(s) deleted, id = ${it[1]}"} ?: "Invalid input or internal error")
+            else -> call.respond("Invalid type: $typ")
+          }
+      }
+
+      post("/contains")
+      {
+        val id = call.request.queryParameters["id"]?.toIntOrNull()?:0
+        if (id<1) call.respond("Invalid id, may be only positive integer")
+        else
+        {
+          val pointObj = call.receive<GeoJsonPoint>()
+          val doesItContainIt:Boolean? = CRUD().contains(id, pointObj)
+          call.respond(doesItContainIt?.let{"Area #$id ${if (it) "CONTAINS" else "DOES NOT CONTAIN"} the given point"} ?: "Invalid input or internal error")
+          
+        }
+
+      }
+
     }
 	}.start(wait = true)
 }

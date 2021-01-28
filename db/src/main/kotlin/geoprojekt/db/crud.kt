@@ -71,5 +71,66 @@ class CRUD
     return arrayOf(cnt, newID?:-1)
   }
 
+  fun updPGpoint(id:Int, obj:GeoJsonPoint):Array<Int>?
+  {
+    if (obj.coordinates==null) return null
+
+    val qryStr = "update geo_points set coord=point(${obj.coordinates!![0]}, ${obj.coordinates!![1]}) where id=?"
+    /* */ println(qryStr)
+    val qry:Query = DB.kontxt.query(qryStr, id)
+    val cnt = try { qry.execute() }catch(e:Throwable)  { e.printStackTrace(); return null }
+
+    return arrayOf(cnt, id)
+  }
+
+  fun updPGpolygon(id:Int, obj:GeoJsonPolygon):Array<Int>?
+  {
+    if (obj.coordinates==null) return null
+
+    val coordPGInputFormat:String = obj.coordinates!!.flatten().joinToString(prefix="'", postfix="'")
+
+    val qryStr = "update geo_polygons set coord=polygon($coordPGInputFormat) where id=?"
+    /* */ println(qryStr)
+    val qry:Query = DB.kontxt.query(qryStr, id)
+    val cnt = try { qry.execute() }catch(e:Throwable)  { e.printStackTrace(); return null }
+
+    return arrayOf(cnt, id)
+  }
+
+  fun delPGpoint(id:Int):Array<Int>?
+  {
+    val qryStr = "delete from geo_points where id=?"
+    /* */ println(qryStr)
+    val qry:Query = DB.kontxt.query(qryStr, id)
+    val cnt = try { qry.execute() }catch(e:Throwable)  { e.printStackTrace(); return null }
+    return arrayOf(cnt, id)
+  }
+
+  fun delPGpolygon(id:Int):Array<Int>?
+  {
+    val qryStr = "delete from geo_polygons where id=?"
+    /* */ println(qryStr)
+    val qry:Query = DB.kontxt.query(qryStr, id)
+    val cnt = try { qry.execute() }catch(e:Throwable)  { e.printStackTrace(); return null }
+    return arrayOf(cnt, id)
+  }
+
+  fun contains(id:Int, obj:GeoJsonPoint):Boolean?
+  {
+    if (obj.coordinates==null) return null
+
+    val qry:ResultQuery<Record>? =
+      try
+      {
+        DB.kontxt.resultQuery("select point(${obj.coordinates!![0]}, ${obj.coordinates!![1]}) <@ coord from geo_polygons where id=? ", id)
+        /* */ .also{println(it.getSQL()); println(it.getBindValues())}
+      }catch(e:Throwable)  { e.printStackTrace(); return null }
+    val doesItContainIt:Boolean? =
+      try 
+      { qry?.fetchAnyInto(Boolean::class.java) 
+      }catch(e:Throwable) { e.printStackTrace(); return null }
+    return doesItContainIt
+  }
+
 }
 
