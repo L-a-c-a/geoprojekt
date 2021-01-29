@@ -1,0 +1,147 @@
+{
+  "openapi":"3.0.2",
+  "info": {
+    "title":"Geo Project",
+    "version":"1.0"
+  },
+  "servers": [
+    {"url":"http://localhost:8000"}
+  ],
+  "paths": 
+  { "/read":
+    { "get":
+      { "description": "Returns a shape of the given id." 
+      , "parameters": 
+        [ { "name": "id"
+          , "in":"query"
+          , "description": "Shape numeric id"
+          , "required": true
+          }
+        , { "name": "type"
+          , "in":"query"
+          , "description": "Shape type; one of point, polygon"
+          , "required": true
+          }
+        ]
+      , "responses": 
+        { "default":
+          { "description": "The shape in GeoJSON format"
+          , "content": 
+            { "application/json":{}
+            }
+          }
+        , "200":
+          { "description": "Error message (TODO: other response code)"
+          , "content": {"text/plain":{}}
+          }
+        }
+      }
+      
+    }
+
+  , "/create":
+    { "put":
+      { "description": "Creates a new shape"
+      , "parameters":
+        [ { "name": "type"
+          , "in":"query"
+          , "description": "Shape type; one of point, polygon - TODO: it shouldn't be requested, the body includes it"
+          , "required": true
+          }
+        ]
+      , "requestBody":
+        {
+          "content": {}
+        }
+      , "responses":
+        {
+          "default":
+          { "description": "Message with the new item's id; or error message"
+          , "content": {"text/plain":{}}
+          }
+        }
+      }
+
+    }
+
+  , "/update":
+    { "post":
+      { "description": "Changes the shape of the given id." 
+      , "parameters": 
+        [ { "name": "id"
+          , "in":"query"
+          , "description": "Shape numeric id"
+          , "required": true
+          }
+        , { "name": "type"
+          , "in":"query"
+          , "description": "Shape type; one of point, polygon - TODO: it shouldn't be requested, the body includes it"
+          , "required": true
+          }
+        ]
+      , "requestBody":
+        {
+          "content": {}
+        }
+        , "responses":
+        {
+          "default":
+          { "description": "Message of completion or error - TODO: on error other http response code"
+          , "content": {"text/plain":{}}
+          }
+        }
+      }
+    }
+
+  , "/delete":
+    { "delete":
+      { "description": "Deletes the shape of the given id from the database." 
+      , "parameters": 
+        [ { "name": "id"
+          , "in":"query"
+          , "description": "Shape numeric id"
+          , "required": true
+          }
+        , { "name": "type"
+          , "in":"query"
+          , "description": "Shape type; one of point, polygon"
+          , "required": true
+          }
+        ]
+      , "responses":
+        {
+          "default":
+          { "description": "Message of completion or error - TODO: on error other http response code"
+          , "content": {"text/plain":{}}
+          }
+        }
+      }
+    }
+
+  , "/contains":
+    { "post":
+      { "description": "Checks if a given point is inside of a saved polygon with the given id"
+      , "parameters": 
+        [ { "name": "id"
+          , "in":"query"
+          , "description": "Id of the saved polygon to fit into"
+          , "required": true
+          }
+        ]
+      , "requestBody":
+        { "description": "The point to fit into the polygon"
+        , "content": {}
+        }
+      , "responses":
+        {
+          "default":
+          { "description": "Textual answer or error message - TODO: on error other http response code"
+          , "content": {"text/plain":{}}
+          }
+        }
+      }
+   }
+
+  }
+
+}
