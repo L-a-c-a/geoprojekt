@@ -18,7 +18,7 @@ class CRUD
       try
       {
         DB.kontxt.resultQuery("""select coord from geo_points where id=? """, id)
-        /* */ .also{println(it.getSQL()); println(it.getBindValues())}
+        //* */ .also{println(it.getSQL()); println(it.getBindValues())}
       }catch(e:Throwable)  { e.printStackTrace(); null }
     try { pont = qry?.fetchAnyInto(PGpoint::class.java) }catch(e:Throwable) { e.printStackTrace(); pont = PGpoint(0.0, 0.0) }
 
@@ -32,7 +32,7 @@ class CRUD
       try
       {
         DB.kontxt.resultQuery("""select coord from geo_polygons where id=? """, id)
-        /* */ .also{println(it.getSQL()); println(it.getBindValues())}
+        //* */ .also{println(it.getSQL()); println(it.getBindValues())}
       }catch(e:Throwable)  { e.printStackTrace(); e.message?.let{errorMessages.add(it)}; null }
     val poly =
       try 
@@ -62,7 +62,7 @@ class CRUD
     val coordPGInputFormat:String = obj.coordinates!!.flatten().joinToString(prefix="'", postfix="'")
 
     val qryStr = "insert into geo_polygons (coord) values(polygon($coordPGInputFormat))"
-    /* */ println(qryStr)
+    //* */ println(qryStr)
     val qry:Query = DB.kontxt.query(qryStr)
     val cnt = try { qry.execute() }catch(e:Throwable)  { e.printStackTrace(); return null }
 
@@ -76,7 +76,7 @@ class CRUD
     if (obj.coordinates==null) return null
 
     val qryStr = "update geo_points set coord=point(${obj.coordinates!![0]}, ${obj.coordinates!![1]}) where id=?"
-    /* */ println(qryStr)
+    //* */ println(qryStr)
     val qry:Query = DB.kontxt.query(qryStr, id)
     val cnt = try { qry.execute() }catch(e:Throwable)  { e.printStackTrace(); return null }
 
@@ -90,7 +90,7 @@ class CRUD
     val coordPGInputFormat:String = obj.coordinates!!.flatten().joinToString(prefix="'", postfix="'")
 
     val qryStr = "update geo_polygons set coord=polygon($coordPGInputFormat) where id=?"
-    /* */ println(qryStr)
+    //* */ println(qryStr)
     val qry:Query = DB.kontxt.query(qryStr, id)
     val cnt = try { qry.execute() }catch(e:Throwable)  { e.printStackTrace(); return null }
 
@@ -100,7 +100,7 @@ class CRUD
   fun delPGpoint(id:Int):Array<Int>?
   {
     val qryStr = "delete from geo_points where id=?"
-    /* */ println(qryStr)
+    //* */ println(qryStr)
     val qry:Query = DB.kontxt.query(qryStr, id)
     val cnt = try { qry.execute() }catch(e:Throwable)  { e.printStackTrace(); return null }
     return arrayOf(cnt, id)
@@ -109,7 +109,7 @@ class CRUD
   fun delPGpolygon(id:Int):Array<Int>?
   {
     val qryStr = "delete from geo_polygons where id=?"
-    /* */ println(qryStr)
+    //* */ println(qryStr)
     val qry:Query = DB.kontxt.query(qryStr, id)
     val cnt = try { qry.execute() }catch(e:Throwable)  { e.printStackTrace(); return null }
     return arrayOf(cnt, id)
@@ -123,7 +123,7 @@ class CRUD
       try
       {
         DB.kontxt.resultQuery("select point(${obj.coordinates!![0]}, ${obj.coordinates!![1]}) <@ coord from geo_polygons where id=? ", id)
-        /* */ .also{println(it.getSQL()); println(it.getBindValues())}
+        //* */ .also{println(it.getSQL()); println(it.getBindValues())}
       }catch(e:Throwable)  { e.printStackTrace(); return null }
     val doesItContainIt:Boolean? =
       try 

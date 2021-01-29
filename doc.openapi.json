@@ -25,7 +25,7 @@
         ]
       , "responses": 
         { "default":
-          { "description": "The shape in GeoJSON format"
+          { "description": "The shape in GeoJSON format ( {\"type\":..., \"coordinates\":...} )"
           , "content": 
             { "application/json":{}
             }
@@ -50,8 +50,8 @@
           }
         ]
       , "requestBody":
-        {
-          "content": {}
+        { "description": "The shape in GeoJSON format ( {\"type\":..., \"coordinates\":...} )"
+        , "content": {}
         }
       , "responses":
         {
@@ -80,8 +80,8 @@
           }
         ]
       , "requestBody":
-        {
-          "content": {}
+        { "description": "The shape in GeoJSON format ( {\"type\":..., \"coordinates\":...} )"
+        , "content": {}
         }
         , "responses":
         {
@@ -129,7 +129,7 @@
           }
         ]
       , "requestBody":
-        { "description": "The point to fit into the polygon"
+        { "description": "The point to fit into the polygon in GeoJSON format"
         , "content": {}
         }
       , "responses":

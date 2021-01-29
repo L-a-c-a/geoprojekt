@@ -20,14 +20,6 @@ fun main() {
 	embeddedServer(Netty, port = 8000) {
     install(ContentNegotiation) { gson {} }
 		routing {
-      get("konf") { call.respond(KONFIG.konf!!)}  //vigyázz, kiírja a jelszót!
-
-      get("/point/{id}")
-      {
-        val id = call.parameters["id"]?.toIntOrNull()?:0
-        call.respond(CRUD().getPGpoint(id))
-      }
-
       get("/read")
       {
         val id = call.request.queryParameters["id"]?.toIntOrNull()?:0

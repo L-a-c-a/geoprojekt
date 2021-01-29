@@ -13,7 +13,7 @@ object KONFIG
 
   val konf:Konf? =
   {
-    /* */println("most olvasom be a konfigot")
+    //* */println("most olvasom be a konfigot")
     konftxt?.let{Gson().fromJson(it, Konf::class.java)}
   }()
 
