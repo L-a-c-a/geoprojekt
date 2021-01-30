@@ -17,7 +17,7 @@ import io.ktor.features.*
 import io.ktor.gson.*
 
 fun main() {
-	embeddedServer(Netty, port = 8000) {
+	embeddedServer(Netty, port = KONFIG.konf?.port ?: 8000) {
     install(ContentNegotiation) { gson {} }
 		routing {
       get("/read")

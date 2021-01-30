@@ -8,9 +8,8 @@ _Configuration:_ There is a config file at app/src/main/resources/konf.json (not
 It's format is:
 
 `{ "dbkoord": { "url":"jdbc:postgresql://pici:5433/geo", "usr":"geo", "pwd":"***" } }`
-or wherever is your database.
-
-(TODO: the server's port could also be configurable. Now it's 8000 wired in.)
+or wherever is your database.  
+Optionally also `, "port": 8001` to set the server's port. Default is 8000.
 
 _Running:_ by
 
@@ -19,6 +18,8 @@ _Running:_ by
 then in the browser:
 
 `http://localhost:8000/`function`?type=`type`&id=`id
+
+(or wherever and on whichever port is your server from the browser's point of view)
 
 where function is one of `read`, `create`, `update`, `delete`, `contains`,  
 type is one of `point`, `polygon`,  

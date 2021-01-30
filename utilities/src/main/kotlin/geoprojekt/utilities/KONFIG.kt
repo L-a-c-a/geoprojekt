@@ -5,7 +5,7 @@ import java.io.*
 import com.google.gson.*
 
 data class DB (val url: String, val usr: String, val pwd: String)
-data class Konf(val dbkoord:DB)
+data class Konf(val dbkoord:DB, val port:Int?)
 
 object KONFIG
 {
