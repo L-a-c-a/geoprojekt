@@ -134,8 +134,16 @@
         }
       , "responses":
         {
-          "default":
-          { "description": "Textual answer or error message - TODO: on error other http response code"
+          "200":
+          { "description": "Textual answer (CONTAINS or DOES NOT CONTAIN)"
+          , "content": {"text/plain":{}}
+          }
+        , "404":
+          { "description": "Message indicating that the polygon with the given id is not found in the database"
+          , "content": {"text/plain":{}}
+          }
+        , "default":
+          { "description": "Error message"
           , "content": {"text/plain":{}}
           }
         }

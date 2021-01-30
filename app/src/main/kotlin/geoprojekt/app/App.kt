@@ -95,9 +95,13 @@ fun main() {
         else
         {
           val pointObj = call.receive<GeoJsonPoint>()
-          val doesItContainIt:Boolean? = CRUD().contains(id, pointObj)
-          call.respond(doesItContainIt?.let{"Area #$id ${if (it) "CONTAINS" else "DOES NOT CONTAIN"} the given point"} ?: "Invalid input or internal error")
-          
+          val (status, doesItContainIt) = CRUD().contains(id, pointObj)
+          when (status)
+          {
+            HttpStatusCode.OK -> call.respond("Area #$id ${if (doesItContainIt) "CONTAINS" else "DOES NOT CONTAIN"} the given point")
+            HttpStatusCode.NotFound -> call.respond(status, "Area #$id not found")
+            else -> call.respond(status, "Invalid input or internal error")   //TODO: maybe specify further
+          }
         }
 
       }

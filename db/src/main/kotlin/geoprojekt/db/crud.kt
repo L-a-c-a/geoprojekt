@@ -6,6 +6,7 @@ import org.jooq.*
 import org.jooq.impl.*
 import org.jooq.impl.DSL.*
 import org.postgresql.geometric.*
+import io.ktor.http.*
 
 class CRUD
 {
@@ -115,21 +116,23 @@ class CRUD
     return arrayOf(cnt, id)
   }
 
-  fun contains(id:Int, obj:GeoJsonPoint):Boolean?
+  fun contains(id:Int, obj:GeoJsonPoint):Pair<HttpStatusCode, Boolean>
   {
-    if (obj.coordinates==null) return null
+    if (obj.coordinates==null) return HttpStatusCode.BadRequest to false
 
     val qry:ResultQuery<Record>? =
       try
       {
         DB.kontxt.resultQuery("select point(${obj.coordinates!![0]}, ${obj.coordinates!![1]}) <@ coord from geo_polygons where id=? ", id)
         //* */ .also{println(it.getSQL()); println(it.getBindValues())}
-      }catch(e:Throwable)  { e.printStackTrace(); return null }
+      }catch(e:Throwable)  { e.printStackTrace(); return HttpStatusCode.BadRequest  to false}
+    if (qry==null) return HttpStatusCode.BadRequest to false
     val doesItContainIt:Boolean? =
       try 
-      { qry?.fetchAnyInto(Boolean::class.java) 
-      }catch(e:Throwable) { e.printStackTrace(); return null }
-    return doesItContainIt
+      { qry.fetchAnyInto(Boolean::class.java) 
+      }catch(e:Throwable) { e.printStackTrace(); return HttpStatusCode.BadRequest  to false}
+    if (doesItContainIt==null) return HttpStatusCode.NotFound to false
+    return HttpStatusCode.OK to doesItContainIt
   }
 
 }
