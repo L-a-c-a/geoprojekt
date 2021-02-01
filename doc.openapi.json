@@ -24,14 +24,14 @@
           }
         ]
       , "responses": 
-        { "default":
+        { "200":
           { "description": "The shape in GeoJSON format ( {\"type\":..., \"coordinates\":...} )"
           , "content": 
             { "application/json":{}
             }
           }
-        , "200":
-          { "description": "Error message (TODO: other response code)"
+        , "default":
+          { "description": "Error message"
           , "content": {"text/plain":{}}
           }
         }
