@@ -24,7 +24,7 @@ fun main() {
       {
         val id = call.request.queryParameters["id"]?.toIntOrNull()?:0
         val typ = call.request.queryParameters["type"]
-        if (id<1) call.respond("Invalid id, may be only positive integer")
+        if (id<1) call.respond(HttpStatusCode.BadRequest, "Invalid id, may be only positive integer")
         else
         {
           when (typ)
@@ -56,14 +56,18 @@ fun main() {
         { "point" -> 
           {
             val pointObj = call.receive<GeoJsonPoint>()
-            call.respond(CRUD().putPGpoint(pointObj) ?. let{"${it[0]} object(s) saved, new id = ${it[1]}"} ?: "Invalid input or internal error")
+            CRUD().putPGpoint(pointObj)
+            ?. let{ call.respond("${it[0]} object(s) saved, new id = ${it[1]}") } 
+            ?: call.respond(HttpStatusCode.InternalServerError, "Invalid input or internal error")
           }
           "polygon" -> 
           {
             val polygonObj = call.receive<GeoJsonPolygon>()
-            call.respond(CRUD().putPGpolygon(polygonObj) ?. let{"${it[0]} object(s) saved, new id = ${it[1]}"} ?: "Invalid input or internal error")
+            CRUD().putPGpolygon(polygonObj)
+            ?. let{ call.respond("${it[0]} object(s) saved, new id = ${it[1]}") } 
+            ?: call.respond(HttpStatusCode.InternalServerError, "Invalid input or internal error")
           }
-          else -> call.respond("Invalid input")
+          else -> call.respond(HttpStatusCode.InternalServerError, "Invalid input")
         }
       }
       // TODO: pass data to CRUD in text format (with receiveText()) and CRUD will deserialize it as needed, so the "type" parameter is not needed
@@ -72,20 +76,28 @@ fun main() {
       {
         val typ = call.request.queryParameters["type"]
         val id = call.request.queryParameters["id"]?.toIntOrNull()?:0
-        if (id<1) call.respond("Invalid id, may be only positive integer")
+        if (id<1) call.respond(HttpStatusCode.InternalServerError, "Invalid id, may be only positive integer")
         else
           when (typ)
           { "point" -> 
             {
               val pointObj = call.receive<GeoJsonPoint>()
-              call.respond(CRUD().updPGpoint(id, pointObj) ?. let{"${it[0]} object(s) updated, id = ${it[1]}"} ?: "Invalid input or internal error")
+              CRUD().updPGpoint(id, pointObj)
+              ?. let{ if (it[0]>0) call.respond("${it[0]} object(s) updated, id = ${it[1]}")
+                      else call.respond(HttpStatusCode.NotFound, "No $typ #$id found")
+                    } 
+              ?: call.respond(HttpStatusCode.InternalServerError, "Invalid input or internal error")
             }
             "polygon" -> 
             {
               val polygonObj = call.receive<GeoJsonPolygon>()
-              call.respond(CRUD().updPGpolygon(id, polygonObj) ?. let{"${it[0]} object(s) updated, id = ${it[1]}"} ?: "Invalid input or internal error")
+              CRUD().updPGpolygon(id, polygonObj)
+              ?. let{ if (it[0]>0) call.respond("${it[0]} object(s) updated, id = ${it[1]}")
+                      else call.respond(HttpStatusCode.NotFound, "No $typ #$id found")
+                    } 
+              ?: call.respond(HttpStatusCode.InternalServerError, "Invalid input or internal error")
             }
-            else -> call.respond("Invalid input")
+            else -> call.respond(HttpStatusCode.InternalServerError, "Invalid input")
           }
       }
 
@@ -93,7 +105,7 @@ fun main() {
       {
         val typ = call.request.queryParameters["type"]
         val id = call.request.queryParameters["id"]?.toIntOrNull()?:0
-        if (id<1) call.respond("Invalid id, may be only positive integer")
+        if (id<1) call.respond(HttpStatusCode.BadRequest, "Invalid id, may be only positive integer")
         else
           when (typ)
           {
@@ -112,7 +124,7 @@ fun main() {
       post("/contains")
       {
         val id = call.request.queryParameters["id"]?.toIntOrNull()?:0
-        if (id<1) call.respond("Invalid id, may be only positive integer")
+        if (id<1) call.respond(HttpStatusCode.BadRequest, "Invalid id, may be only positive integer")
         else
         {
           val pointObj = call.receive<GeoJsonPoint>()

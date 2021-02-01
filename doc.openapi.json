@@ -30,6 +30,10 @@
             { "application/json":{}
             }
           }
+        , "404":
+          { "description": "Message indicating that the shape with the given id is not found in the database"
+          , "content": {"text/plain":{}}
+          }
         , "default":
           { "description": "Error message"
           , "content": {"text/plain":{}}
@@ -55,8 +59,12 @@
         }
       , "responses":
         {
-          "default":
-          { "description": "Message with the new item's id; or error message"
+          "200":
+          { "description": "Message with the new item's id"
+          , "content": {"text/plain":{}}
+          }
+        , "default":
+          { "description": "Error message"
           , "content": {"text/plain":{}}
           }
         }
@@ -85,8 +93,16 @@
         }
         , "responses":
         {
-          "default":
-          { "description": "Message of completion or error - TODO: on error other http response code"
+          "200":
+          { "description": "Message of completion"
+          , "content": {"text/plain":{}}
+          }
+        , "404":
+          { "description": "Message indicating that the shape with the given id is not found in the database"
+          , "content": {"text/plain":{}}
+          }
+        , "default":
+          { "description": "Error message"
           , "content": {"text/plain":{}}
           }
         }
@@ -110,8 +126,16 @@
         ]
       , "responses":
         {
-          "default":
-          { "description": "Message of completion or error - TODO: on error other http response code"
+          "200":
+          { "description": "Message of completion"
+          , "content": {"text/plain":{}}
+          }
+        , "404":
+          { "description": "Message indicating that the shape with the given id is not found in the database"
+          , "content": {"text/plain":{}}
+          }
+        , "default":
+          { "description": "Error message"
           , "content": {"text/plain":{}}
           }
         }
