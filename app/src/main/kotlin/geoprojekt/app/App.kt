@@ -26,12 +26,27 @@ fun main() {
         val typ = call.request.queryParameters["type"]
         if (id<1) call.respond("Invalid id, may be only positive integer")
         else
+        {
           when (typ)
           {
-            "polygon" -> call.respond(CRUD().getPGpolygon(id))
-            "point" -> call.respond(CRUD().getPGpoint(id))
-            else -> call.respond("Invalid type: $typ")
+            "polygon" ->
+              { val answ = CRUD().getPGpolygon(id)
+                if (answ.error==null)
+                  if (answ.type==null || answ.coordinates==null) call.respond(HttpStatusCode.NotFound, "No $typ #$id found")
+                  else call.respond(answ)
+                else call.respond(HttpStatusCode.InternalServerError, answ.error!!.joinToString())
+              }
+            "point" -> 
+              { val answ = CRUD().getPGpoint(id)
+                if (answ.error==null)
+                  if (answ.type==null || answ.coordinates==null) call.respond(HttpStatusCode.NotFound, "No $typ #$id found")
+                  else call.respond(answ)
+                else call.respond(HttpStatusCode.InternalServerError, answ.error!!.joinToString())
+              }
+            else -> call.respond(HttpStatusCode.InternalServerError, "Invalid type: $typ")
           }
+
+        }
       }
 
       put("/create")
@@ -82,10 +97,16 @@ fun main() {
         else
           when (typ)
           {
-            "polygon" -> call.respond(CRUD().delPGpolygon(id) ?. let{"${it[0]} object(s) deleted, id = ${it[1]}"} ?: "Invalid input or internal error")
-            "point" -> call.respond(CRUD().delPGpoint(id) ?. let{"${it[0]} object(s) deleted, id = ${it[1]}"} ?: "Invalid input or internal error")
-            else -> call.respond("Invalid type: $typ")
-          }
+            "polygon" -> CRUD().delPGpolygon(id)
+            "point" -> CRUD().delPGpoint(id)
+            else -> arrayOf()
+          } 
+          ?.let { if (it.size==2)
+                    if (it[0]>0) call.respond("${it[0]} object(s) deleted, id = ${it[1]}")
+                    else call.respond(HttpStatusCode.NotFound, "No $typ #$id found")
+                  else call.respond(HttpStatusCode.InternalServerError, "Invalid type: $typ")
+                }
+          ?: call.respond(HttpStatusCode.InternalServerError, "Invalid input or internal error")
       }
 
       post("/contains")
